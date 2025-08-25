@@ -66,6 +66,8 @@ struct OnnxToOvNetworkBindings {
                                [&onnx_name](const auto& ov_parameter_info) { return ov_parameter_info.get_names().contains(onnx_name); });
         bool matched_names = it != ov_parameters.end();
 
+        if (it == ov_parameters.end()) continue;
+
         // For Stateful Model Compilation, the ONNX model includes KV cache (past/present) tensors.
         // However, these tensors are internally converted to a stateful representation, which removes them.
         // It's also possible that the onnx model does not contain tensors such as beam_idx, whereas our converted

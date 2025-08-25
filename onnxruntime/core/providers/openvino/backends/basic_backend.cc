@@ -104,16 +104,19 @@ BasicBackend::BasicBackend(std::unique_ptr<ONNX_NAMESPACE::ModelProto>& model_pr
                                auto_unified_compile);
     try {
       if (is_unified_compile) {
+        std::cout << "Debug info" << std::endl;
+      }
+      // if (is_unified_compile) {
         exe_network_ = OVCore::Get()->CompileModel(model,
                                                    hw_target,
                                                    device_config,
                                                    subgraph_context_.subgraph_name);
-      } else {  // For all other types use ov::ov_core read_model() to generate OV IR
-                // followed by ov::ov_core compile_model()
-        ov_model = CreateOVModel(std::move(model), session_context_, const_outputs_map_);
-        exe_network_ = OVCore::Get()->CompileModel(
-            ov_model, hw_target, device_config, enable_causallm, subgraph_context_.subgraph_name);
-      }
+      // } else {  // For all other types use ov::ov_core read_model() to generate OV IR
+      //           // followed by ov::ov_core compile_model()
+      //   ov_model = CreateOVModel(std::move(model), session_context_, const_outputs_map_);
+      //   exe_network_ = OVCore::Get()->CompileModel(
+      //       ov_model, hw_target, device_config, enable_causallm, subgraph_context_.subgraph_name);
+      // }
       LOGS_DEFAULT(INFO) << log_tag << "Loaded model to the plugin";
     } catch (const OnnxRuntimeException& ex) {
       std::string exception_str = ex.what();
