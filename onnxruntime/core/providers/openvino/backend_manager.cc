@@ -375,22 +375,22 @@ static bool IsQDQGraph(const onnxruntime::GraphViewer& graph_viewer) {
   return false;
 }
 
-static bool IsModelBF16(const onnxruntime::GraphViewer& graph_viewer) {
-  const auto& node_indices = graph_viewer.GetNodesInTopologicalOrder();
-  for (std::size_t i = 0; i < node_indices.size(); i++) {
-    gsl::not_null<const onnxruntime::Node*> node(graph_viewer.GetNode(node_indices[i]));
-    for (auto& output : node->OutputDefs()) {
-      if (output->ToProto().type().tensor_type().elem_type() == ONNX_NAMESPACE::TensorProto_DataType_BFLOAT16)
-        return true;
-    }
-  }
-  return false;
-}
+//static bool IsModelBF16(const onnxruntime::GraphViewer& graph_viewer) {
+//  const auto& node_indices = graph_viewer.GetNodesInTopologicalOrder();
+//  for (std::size_t i = 0; i < node_indices.size(); i++) {
+//    gsl::not_null<const onnxruntime::Node*> node(graph_viewer.GetNode(node_indices[i]));
+//    for (auto& output : node->OutputDefs()) {
+//      if (output->ToProto().type().tensor_type().elem_type() == ONNX_NAMESPACE::TensorProto_DataType_BFLOAT16)
+//        return true;
+//    }
+//  }
+//  return false;
+//}
 
 static void DumpOpenVINOEPModel([[maybe_unused]] const std::filesystem::path& onnx_model_path_name,
                                 [[maybe_unused]] ONNX_NAMESPACE::ModelProto* model_proto,
                                 [[maybe_unused]] const onnxruntime::Node& fused_node) {
-#ifndef RELEASE
+// #ifndef RELEASE
   if (openvino_ep::backend_utils::IsDebugEnabled()) {
     auto model_name = onnx_model_path_name.empty() ? "unknown.onnx" : onnx_model_path_name.filename();
 
@@ -405,7 +405,7 @@ static void DumpOpenVINOEPModel([[maybe_unused]] const std::filesystem::path& on
     std::fstream dump(model_name, std::ios::out | std::ios::trunc | std::ios::binary);
     model_proto->SerializeToOstream(dump);
   }
-#endif
+// #endif
 }
 
 std::unique_ptr<ONNX_NAMESPACE::ModelProto>
@@ -468,16 +468,16 @@ BackendManager::GetModelProtoFromFusedNode(const onnxruntime::Node& fused_node,
     DumpOpenVINOEPModel(onnx_model_path_name, model_proto.get(), fused_node);
     ORT_ENFORCE(status.IsOK(), status.ErrorMessage());
     return model_proto;
-  } else if (IsModelBF16(subgraph)) {
-    LOGS_DEFAULT(INFO) << "[OpenVINO-EP] OVEP bfloat16->float16 optimization pass is enabled";
-    std::unique_ptr<onnxruntime::Model> model;
-    Status status = bfloat16_fix::Transform(subgraph, logger, model);
-    auto model_proto = model->ToProto();
-    model_proto->set_ir_version(ONNX_NAMESPACE::Version::IR_VERSION);
-    print_model_proto_duration();
-    DumpOpenVINOEPModel(onnx_model_path_name, model_proto.get(), fused_node);
-    ORT_ENFORCE(status.IsOK(), status.ErrorMessage());
-    return model_proto;
+  // } else if (IsModelBF16(subgraph)) {
+  //   LOGS_DEFAULT(INFO) << "[OpenVINO-EP] OVEP bfloat16->float16 optimization pass is enabled";
+  //   std::unique_ptr<onnxruntime::Model> model;
+  //   Status status = bfloat16_fix::Transform(subgraph, logger, model);
+  //   auto model_proto = model->ToProto();
+  //   model_proto->set_ir_version(ONNX_NAMESPACE::Version::IR_VERSION);
+  //   print_model_proto_duration();
+  //   DumpOpenVINOEPModel(onnx_model_path_name, model_proto.get(), fused_node);
+  //   ORT_ENFORCE(status.IsOK(), status.ErrorMessage());
+  //   return model_proto;
   } else {
     LOGS_DEFAULT(INFO) << "[OpenVINO-EP] OVEP QDQ optimization pass is disabled";
     auto model = subgraph.CreateModel(logger);

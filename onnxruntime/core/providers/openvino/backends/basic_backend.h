@@ -113,6 +113,11 @@ struct OnnxToOvNetworkBindings {
 
           info.SetFullyDynamic(has_fully_dynamic);
           info.SetBoundedDynamic(has_bounded_dynamic);
+        } else {
+          auto shape_size = ov::shape_size(shape.get_shape());
+          if (0 == shape_size) {
+            has_dynamic_io_ = true;
+          }
         }
 
         input_output_map.push_back(std::move(info));

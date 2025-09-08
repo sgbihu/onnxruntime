@@ -476,7 +476,7 @@ void DataOps::populate_op_mode_supported() {
   }
   {
     UnsupportedOpMode obj = {{V_2023_1, V_2023_2, V_2023_3, V_2024_0, V_2024_1, V_2024_2,
-                              V_2024_3, V_2024_4, V_2024_5, V_2024_6, V_2025_0, V_2025_1},
+                              V_2024_3, V_2024_4, V_2024_5, V_2024_6, V_2025_0, V_2025_1, V_2025_2},
                              [this](const Node* node, const InitializedTensorSet&) {
                               auto& attributes = node->GetAttributes();
                               if (attributes.count("coordinate_transformation_mode") > 0) {

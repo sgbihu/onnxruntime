@@ -171,13 +171,13 @@ CreateOVModel(std::string&& model,
         --index;
       }
     }
-#ifndef NDEBUG
+// #ifndef NDEBUG
     if (IsDebugEnabled()) {
       std::string name = ov_model->get_friendly_name();
       ov::pass::Serialize serializer(name + ".xml", name + ".bin");
       serializer.run_on_model(ov_model);
     }
-#endif
+// #endif
     return ov_model;
   } catch (std::string const& msg) {
     ORT_THROW(msg);
