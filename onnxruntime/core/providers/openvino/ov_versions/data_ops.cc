@@ -49,7 +49,7 @@ std::set<std::string> ops_supported_only_in_model = {
     "Pad",
     "RandomNormalLike",
     "ReduceMin",
-    "Slice",
+    // "Slice",
     "TopK"
   };
 
